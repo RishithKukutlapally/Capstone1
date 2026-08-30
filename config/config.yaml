@@ -1,0 +1,180 @@
+# ===========================================================================
+# Product Catalog & Compliance Assistant — single source of retrieval truth.
+#
+# NFR-04: every retrieval parameter (chunk size / overlap, top-K, thresholds,
+# reranker settings) lives here. Nothing in src/ hard-codes these values; the
+# code reads them through catalog_rag.config.load_config().
+#
+# Any value can be overridden by an environment variable using the pattern
+#   CATALOG_RAG_<SECTION>__<FIELD>      e.g. CATALOG_RAG_LLM__PRIMARY_MODEL
+# ===========================================================================
+
+paths:
+  corpus_dir: data/corpus
+  vector_store_dir: storage/chroma
+  bm25_index_path: storage/bm25/bm25_corpus.json
+  golden_set_path: eval/golden_set.json
+  reports_dir: reports
+  log_dir: logs
+
+# ---------------------------------------------------------------------------
+# Chunking. Rationale: docs/chunking-strategy.md
+# The corpus is clause-structured policy text, so we split on clause boundaries
+# first and only fall back to recursive character splitting inside an
+# oversized clause. This keeps a citation anchored to exactly one clause id.
+# ---------------------------------------------------------------------------
+chunking:
+  strategy: clause_aware_recursive
+  # Applied only when a single clause exceeds max_chunk_chars.
+  chunk_size: 900
+  chunk_overlap: 150
+  # A clause longer than this is split; shorter clauses are indexed whole.
+  max_chunk_chars: 1400
+  # Each chunk is prefixed with "<doc title> > <section> > <clause id>" so the
+  # embedding carries hierarchical context. See docs/chunking-strategy.md.
+  prepend_breadcrumb: true
+  separators:
+    - "\n\n"
+    - "\n"
+    - ". "
+    - " "
+
+# ---------------------------------------------------------------------------
+# Embeddings. Rationale: docs/embedding-selection.md
+# Local Sentence-Transformers model — no API cost, no data egress.
+# ---------------------------------------------------------------------------
+embeddings:
+  model_name: BAAI/bge-small-en-v1.5
+  dimension: 384
+  normalize: true
+  batch_size: 32
+  device: null            # null -> auto-detect (cuda if available, else cpu)
+  # BGE models are trained with an asymmetric query prefix; documents get none.
+  query_instruction: "Represent this sentence for searching relevant passages: "
+  document_instruction: ""
+
+# ---------------------------------------------------------------------------
+# Vector store — Chroma, in-process, persisted to disk. No Docker, no server.
+# ---------------------------------------------------------------------------
+vector_store:
+  provider: chroma
+  collection_name: catalog_compliance
+  distance: cosine
+  # AC-01 idempotency: chunk ids are deterministic content hashes, so
+  # re-ingesting an unchanged corpus is a no-op upsert.
+  upsert_batch_size: 128
+
+# ---------------------------------------------------------------------------
+# Retrieval — AC-03 (hybrid + fusion) and AC-04 (reranking).
+# ---------------------------------------------------------------------------
+retrieval:
+  # Candidates pulled from each arm BEFORE fusion.
+  bm25_top_k: 20
+  vector_top_k: 20
+  # Reciprocal Rank Fusion. score = sum over arms of 1 / (rrf_k + rank).
+  # rrf_k=60 is the value from Cormack et al. (2009); it damps the influence of
+  # any single arm's top hit so one strong lexical match cannot dominate.
+  rrf_k: 60
+  # How many fused candidates are handed to the cross-encoder.
+  fusion_top_k: 12
+  # Final top-K passed to the generator after reranking.
+  final_top_k: 5
+  # Weight applied to each arm's RRF contribution (1.0 = equal footing).
+  bm25_weight: 1.0
+  vector_weight: 1.0
+
+# ---------------------------------------------------------------------------
+# Reranking — AC-04. Local cross-encoder, no hosted reranker needed.
+# ---------------------------------------------------------------------------
+reranker:
+  enabled: true
+  model_name: cross-encoder/ms-marco-MiniLM-L-6-v2
+  device: null            # null -> let sentence-transformers pick (cuda if present)
+  # Candidates whose cross-encoder score falls below this are dropped before
+  # generation even if that leaves fewer than final_top_k documents. This is
+  # the first half of the abstention path (AC-05).
+  score_threshold: -6.0
+
+# ---------------------------------------------------------------------------
+# Query transformation — AC-07.
+# ---------------------------------------------------------------------------
+query_transform:
+  enabled: true
+  # rewrite: normalise colloquial phrasing into policy vocabulary
+  # expand:  add domain synonyms to help the BM25 arm
+  # decompose: split multi-part questions into independently retrieved sub-queries
+  mode: rewrite_expand_decompose
+  max_sub_queries: 3
+  # Skip the LLM round-trip for short, single-clause questions.
+  min_chars_for_decomposition: 60
+  # Retrieval runs once per sub-query; results are fused across sub-queries too.
+  fuse_sub_query_results: true
+
+# ---------------------------------------------------------------------------
+# Generation & grounding — AC-02, AC-05, AC-06.
+# ---------------------------------------------------------------------------
+llm:
+  provider: google_genai
+  primary_model: gemini-3.5-flash-lite
+  # Challenger for the AC-10 comparison. A previous-generation model of the same
+  # class, so the comparison isolates model capability with everything else held
+  # constant.
+  challenger_model: gemini-3.5-flash
+  temperature: 0.0
+  max_output_tokens: 2048
+  # NFR-05: retries with exponential backoff, then a safe fallback response.
+  max_retries: 3
+  retry_initial_wait_seconds: 2
+  retry_max_wait_seconds: 20
+  request_timeout_seconds: 60
+
+grounding:
+  # AC-05 / NFR-08. If the model's self-reported grounding confidence is below
+  # this, the answer is replaced with an abstention. No answer is returned
+  # without provenance above this threshold.
+  abstention_threshold: 0.45
+  # If reranking leaves fewer than this many usable documents, abstain outright
+  # without spending an LLM call.
+  min_supporting_chunks: 1
+  # AC-02: an answer must carry at least this many clause-level citations.
+  min_citations: 1
+  require_citations: true
+  abstention_message: >-
+    The committed catalog and compliance corpus does not contain a guideline
+    that supports an answer to this question. Please consult the catalog
+    operations policy owner. This assistant surfaces published guidelines only
+    and does not issue compliance determinations.
+
+# ---------------------------------------------------------------------------
+# Evaluation harness — AC-08, AC-09, AC-10, NFR-06.
+# ---------------------------------------------------------------------------
+eval:
+  # flash-lite is used as the judge: it is much faster than the thinking
+  # models and RAGAS makes many judge calls per question.
+  judge_model: gemini-3.5-flash-lite
+  judge_temperature: 0.0
+  # RAGAS defaults to a 180s timeout, too short for a thinking model.
+  judge_timeout_seconds: 600
+  judge_workers: 4
+  metrics:
+    - context_precision
+    - context_recall
+    - faithfulness
+    - answer_relevancy
+  # Determinism: temperature 0 everywhere, fixed seed, fixed golden set order.
+  seed: 42
+  # Delay between requests. Raise this to 2-4 on a free-tier key, which is rate
+  # limited to roughly 10 requests per minute.
+  request_delay_seconds: 0.2
+  # Models compared for AC-10. Both must be Gemini (the only approved provider).
+  comparison_models:
+    - gemini-3.5-flash-lite
+    - gemini-3.5-flash
+
+logging:
+  # NFR-08: queries and answers are logged with provenance.
+  level: INFO
+  log_queries: true
+  # NFR-03: never write raw PII to logs. Emails / phones / order ids in a query
+  # are masked before the line is written.
+  mask_pii: true

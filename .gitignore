@@ -1,0 +1,44 @@
+# --- Secrets (NFR-01) --------------------------------------------------------
+.env
+*.key
+*.pem
+
+# --- Python ------------------------------------------------------------------
+__pycache__/
+*.py[cod]
+*.egg-info/
+build/
+dist/
+.venv/
+venv/
+env/
+.pytest_cache/
+.coverage
+htmlcov/
+.mypy_cache/
+.ruff_cache/
+
+# --- Generated vector index --------------------------------------------------
+# The Chroma index is a build artifact: it is rebuilt from the committed corpus
+# by `python -m catalog_rag.cli ingest`, so it is not committed.
+storage/
+
+# --- Runtime logs ------------------------------------------------------------
+# Logs may contain user queries; per docs/pii-policy.md they stay local.
+logs/
+
+# --- Model caches ------------------------------------------------------------
+.cache/
+models/
+
+# --- Streamlit ---------------------------------------------------------------
+.streamlit/secrets.toml
+
+# --- OS / editor -------------------------------------------------------------
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+
+# NOTE: reports/ is deliberately NOT ignored. Per the Evidence-in-Repo Rule the
+# RAGAS report, model comparison and sample answers MUST be committed.

@@ -1,0 +1,438 @@
+Agentic AI Engineer Pathway — Gen AI & RAG Capstone
+Product Catalog & Compliance Assistant — Retrieval-Augmented
+Assistant
+Business Case AAIE_021_ECM · Domain: E-commerce — Catalog & Product Compliance · Track: Gen AI Core + RAG
+Engineering
+
+1. Project Identity
+Business Case Title Product Catalog & Compliance Assistant — Retrieval-Augmented
+
+Assistant
+Business Case ID AAIE_021_ECM
+Domain E-commerce — Catalog & Product Compliance
+Project Type Gen AI Capstone — Gen AI Core + RAG Engineering
+Cohort (filled by Operations team)
+
+2. Engagement Overview
+Duration 15 hours
+Format Individual
+Evaluation Mode Automated static review of the submitted Git repository against the
+RAG Engineering Rubric (21 parameters / 100 marks across 6
+categories). Rubric parameters scored with Google Gemini (not
+Claude); presence and numeric-threshold parameters scored
+deterministically in Python.
+
+Submission Push final code to your assigned Virtusa GitLab repository by the
+
+cohort cut-off.
+
+Review Output Per-learner Excel report (Summary, Categories, Scorecard, Detailed,
+
+Improvement).
+
+Grade Bands Distinction ≥ 90 · Merit 75–89 · Pass 60–74 · Not Yet Passed < 60
+What is evaluated: retrieval-pipeline engineering (chunking, hybrid search, fusion, reranking, query
+transformation), grounded generation with clause-level citations, structured output, measured retrieval quality
+(RAGAS on a committed golden set), model and embedding selection, and engineering reproducibility.
+What is not evaluated: the visual polish of any interface, model fine-tuning, or which library you pick within the
+approved open-source set. You are judged on retrieval quality and evidence.
+3. Problem Statement & Expected Solution
+3.1 Problem
+A marketplace's catalog-operations team needs answers about product listing standards, category guidelines,
+and safety / labeling compliance — grounded strictly in the (synthetic) catalog policies and compliance guides.
+Questions such as “what labeling is required for this product category?” or “does this listing meet catalog
+standards?” must cite the exact guideline, and the assistant must abstain when the corpus does not support an
+answer.
+
+3.2 Your Role
+RAG Engineer. You design the ingestion and indexing strategy, build hybrid retrieval with reranking, engineer
+grounded generation with citations and domain-specific extraction (applicable guideline, the requirement, and
+any labeling / safety condition), and — critically — you measure retrieval quality with a repeatable evaluation
+harness and defend your model and embedding choices with data.
+3.3 Expected Solution
+A working RAG application delivered as a Git repository that demonstrates:
+• An ingestion pipeline that chunks, embeds, and indexes a synthetic catalog and product-compliance corpus
+into a persisted vector store, re-runnable and idempotent.
+• A retrieval layer combining lexical (BM25) and semantic search with fusion (e.g., Reciprocal Rank Fusion)
+and a reranking stage before generation.
+• A generation layer that returns validated structured output — answer, clause-level citations, applicable
+guideline, the requirement, and any labeling / safety condition, and a confidence/grounding indicator —
+and abstains when the corpus is insufficient.
+• An evaluation harness that computes RAGAS metrics over a committed golden set, plus a documented
+comparison of at least two candidate LLMs.
+• An evidence trail — committed eval reports, sample answers, and a reproducible eval script — proving the
+quality claims.
+3.4 Applicable Rules
+• Synthetic-Data Rule. Use only synthetic / dummy data you generate yourself — no real seller, product, or
+confidential catalog data, and no Virtusa confidential data.
+• Evidence-in-Repo Rule. Only artifacts committed to the repository are scored. Eval metrics, golden set,
+sample outputs, and the eval script must be committed — uncommitted results do not count.
+• Reproducibility Rule. The pipeline and the evaluation must run from a single documented command with
+committed sample data and a README quick-start.
+• AC-Traceability Rule. Each Acceptance Criterion must be referenced by at least one test or eval-set entry
+carrying its AC-NN identifier.
+• Grounding & Advice Rule. The assistant surfaces the applicable rules/clauses with citations; it must not
+issue a definitive decision as legal or financial advice, and must prefer abstention over hallucination.
+• Open-Source & No-Docker Rule. Use only the approved open-source stack with Google Gemini as the LLM
+provider. The project must build, run, and be evaluated with pip + Python alone — no Docker and no
+external database service.
+4. Technology & Framework Stack
+The stack is fixed to an open-source toolchain with Google Gemini as the only model provider. The project must
+build, run, and be evaluated with pip + Python alone — no Docker or external database service.
+Layer Approved tool (open source unless noted)
+Language / Orchestration Python 3.11+ · LangChain / LCEL (MIT)
+LLM Provider Google Gemini (API) — the only approved model provider; not Claude
+Embeddings Sentence-Transformers — BGE / E5 / MiniLM (local, open source)
+Vector Store Chroma or FAISS only (open source, in-process — no Docker)
+Lexical / Hybrid rank_bm25 (BM25) fused with vector search
+Reranker Sentence-Transformers CrossEncoder — BGE-reranker / MiniLM
+Evaluation RAGAS (judge LLM = Gemini); non-LLM metrics optional
+
+Layer Approved tool (open source unless noted)
+Interface (optional) CLI · Streamlit · Gradio · FastAPI
+5. Acceptance Criteria & Non-Functional Requirements
+5.1 Functional Acceptance Criteria
+Note. Each AC must have at least one test or eval-set entry referencing its AC-NN identifier.
+ID Criterion
+AC-01 Ingests a synthetic corpus of ≥ 30 documents (synthetic catalog listing standards, category guidelines,
+product-safety & labeling requirements, restricted-substances rules, and image / content guidelines)
+into a persisted vector index; ingestion is re-runnable and idempotent.
+AC-02 A user can ask a natural-language question and receive an answer grounded only in the corpus, with
+≥ 1 clause-level citation (document + section / clause id) per answer.
+AC-03 Retrieval combines lexical (BM25) and semantic search and fuses the two result sets (e.g., Reciprocal
+Rank Fusion) before generation.
+AC-04 Retrieved candidates are reranked (cross-encoder or hosted reranker) before the top-K is passed to
+the generator.
+AC-05 When the corpus does not support an answer, the system abstains or flags low confidence rather
+than fabricating.
+AC-06 Answers are returned as a validated structured object (Pydantic / JSON schema) containing answer
+text, citations, applicable guideline, the requirement, and any labeling / safety condition, and a
+grounding / confidence indicator.
+AC-07 Multi-part or ambiguous queries are transformed (rewrite / expansion / decomposition) before
+retrieval.
+AC-08 A golden evaluation set of ≥ 20 questions with reference answers / expected contexts is committed
+with a re-runnable scoring script.
+AC-09 RAGAS metrics (context precision, context recall, faithfulness, answer relevancy) are computed and
+the numeric results committed as a report artifact.
+AC-10 At least two candidate LLMs are evaluated on the custom eval set and a comparison (metrics +
+selection rationale) is committed.
+
+5.2 Non-Functional Requirements
+ID Requirement
+NFR-01 No secrets or API keys committed; configuration via environment variables with a
+committed .env.example.
+NFR-02 Pipeline and evaluation run end-to-end from a single documented command with committed sample
+data and a README quick-start.
+NFR-03 All data is synthetic; any PII is synthetic, masked where shown, and never written to logs in plaintext,
+per a documented policy.
+NFR-04 Retrieval parameters (chunk size / overlap, top-K, thresholds, reranker settings) are externalized in
+config, not hard-coded inline.
+NFR-05 Provider / model calls implement basic retries and fail gracefully — a clear error or safe fallback
+response on repeated failure — rather than crashing.
+
+NFR-06 Every quality claim is reproducible — the eval script and dataset are committed so metrics can be re-
+derived.
+
+NFR-07 Cost and latency are addressed at concept level only: briefly note the approximate cost / latency of a
+representative query (no benchmarking or performance governance required).
+NFR-08 Basic logging of queries and answers is in place; no answer is returned without provenance above the
+abstention threshold.
+
+6. Functional Scope
+6.1 In Scope
+• Corpus ingestion, cleaning, and chunking (fixed / recursive / semantic / sentence-window — your choice,
+justified).
+• Embedding, indexing, and metadata design (document type, section / clause id) in a persisted vector store.
+• Hybrid retrieval (BM25 + semantic) with fusion and a reranking stage.
+• Query transformation and grounded generation with clause-level citations, applicable guideline, the
+requirement, and any labeling / safety condition extraction, and abstention.
+• Structured output, an evaluation harness (RAGAS + golden set), and a two-model comparison.
+• A minimal interface (CLI / Streamlit / Gradio / FastAPI) to exercise the pipeline.
+6.2 Out of Scope
+• Real catalog-system connectivity or listing actions.
+• Real customer or confidential data of any kind.
+• Fine-tuning or training a model; building your own vector database engine.
+• Production deployment, multi-region, authentication, and user management; front-end visual polish.
+7. Implementation Expectations
+The rubric scores committed evidence. Each category below states what must exist in the repository. Marks per
+category are shown in Section 9.
+7.1 Business & Requirements (15 marks)
+• docs/business-case.md covering problem, target users, corpus description, domain guardrails, and success
+metrics.
+• Acceptance criteria in testable form (AC-NN) under specs/ for at least the core retrieval and grounding
+behaviors.
+• A documented guardrail policy: citation-required, abstention behavior, no definitive compliance
+determination presented as advice, and out-of-scope handling.
+7.2 Ingestion & Indexing (15 marks)
+• An ingestion module with an explicit, justified chunking strategy (not naive fixed-size only).
+• An embedding-model selection note (MTEB-informed rationale, dimensionality / cost trade-offs).
+• A populated, persisted vector store with a sensible metadata schema (source doc, section / clause id, doc
+type).
+7.3 Retrieval Quality (25 marks)
+• Hybrid retrieval combining BM25 and semantic search, with fusion (RRF or equivalent).
+• A reranking stage (cross-encoder or hosted reranker) selecting the final top-K.
+• Query transformation (rewrite / expansion / decomposition) for complex, multi-part questions.
+• Retrieval configuration surfaced (top-K, thresholds, chunk params) in config files.
+7.4 Generation & Grounding (15 marks)
+• Clause-level citations on every answer; committed sample outputs demonstrating provenance.
+
+• Faithfulness / anti-hallucination controls: grounding prompt and abstention path, with a committed refusal
+example.
+• Validated structured output (Pydantic / JSON schema) for answer + citations + applicable guideline, the
+requirement, and any labeling / safety condition + confidence.
+7.5 RAG Evaluation (20 marks)
+• A committed golden eval set (≥ 20 Q with reference answers / expected contexts).
+• Committed RAGAS metric results (context precision, context recall, faithfulness, answer relevancy).
+• A failure-taxonomy analysis distinguishing retrieval vs grounding vs synthesis failures.
+• A re-runnable, deterministic eval harness so metrics can be regenerated.
+7.6 Model Selection & Engineering (10 marks)
+• A committed comparison of ≥ 2 candidate LLMs on the custom eval set with a selection rationale.
+• Engineering hygiene: README quick-start, single-command run, config externalized, no secrets, basic
+retries.
+• A brief cost / latency note for a representative query (concept level).
+8. Expected Outcomes & Deliverables
+By the end of 15 hours, the submitted Git repository must contain the Mandatory items below. Good-to-Have
+items differentiate Merit and Distinction submissions.
+8.1 Mandatory
+• Working RAG pipeline runnable locally via a single command, with committed synthetic corpus and
+README quick-start.
+• docs/business-case.md — problem, users, corpus, guardrails, success metrics.
+• Ingestion + indexing module; hybrid retrieval + fusion + reranking; grounded generation with clause-level
+citations, applicable guideline, the requirement, and any labeling / safety condition extraction, and
+abstention; structured output schema.
+• Golden eval set + re-runnable eval script; committed RAGAS metric report; two-model comparison report.
+• Specs with AC-NN acceptance criteria and AC-referenced tests/eval entries; .env.example; no committed
+secrets.
+• PR-driven Git history: at least 3 PR-driven merges (git merge --no-ff); no direct pushes to main.
+8.2 Good-to-Have
+• Agentic / corrective retrieval (self-RAG or corrective-RAG) with adaptive fallback.
+• Category-aware routing to the relevant compliance ruleset before retrieval.
+• A retrieval-regression gate that fails when RAGAS scores drop below a threshold.
+• A lightweight UI (Streamlit / Gradio) with citation highlighting.
+9. Evaluation Rubric
+21 parameters across 6 categories, 100 marks. Scoring is model-portable (Google Gemini — not Claude) and
+reads only committed repository evidence. Numeric-threshold parameters (marked Deterministic) are scored in
+Python with no model judgment.
+
+Category Parameters (max) Marks
+Business & Requirements Business-case clarity (5) · AC definition (5) · Domain rules & guardrails
+
+(5)
+
+15
+Ingestion & Indexing Chunking strategy + rationale (6) · Embedding selection (4) · Vector
+
+store & indexing (5)
+
+15
+
+Retrieval Quality Hybrid search (7) · RRF fusion (4) · Reranking (7) · Query
+
+transformation (4) · Retrieval config (3)
+
+25
+Generation & Grounding Clause-level citations (6) · Faithfulness / abstention (5) · Structured
+
+output (4)
+
+15
+
+RAG Evaluation Golden set (5) · RAGAS metrics — Deterministic (8) · Failure
+
+taxonomy (4) · Reproducible harness (3)
+
+20
+
+Model Selection &
+Engineering
+
+≥ 2 LLMs compared — Deterministic (4) · Reproducibility / secrets (4)
+· Cost & latency (2)
+
+10
+TOTAL 21 parameters 100
+Grade Band Range
+Distinction ≥ 90
+Merit 75 – 89
+Pass 60 – 74
+Not Yet Passed < 60
+On completion you will have demonstrated the skill industry is seeking: designing a production-grade,
+measurable RAG pipeline that powers a catalog and product-compliance assistant — with hybrid retrieval,
+reranking, grounded citations, and evidence-backed quality — not a prompt-and-hope prototype
+Package                                  Version
+---------------------------------------- -----------
+aiohappyeyeballs                         2.7.1
+aiohttp                                  3.14.3
+aiosignal                                1.4.0
+altair                                   6.2.2
+annotated-doc                            0.0.5
+annotated-types                          0.8.0
+anyio                                    4.14.2
+appdirs                                  1.4.4
+attrs                                    26.1.0
+bcrypt                                   5.0.0
+blinker                                  1.9.0
+build                                    1.6.0
+certifi                                  2026.7.22
+cffi                                     2.1.1
+charset-normalizer                       3.5.1
+chromadb                                 1.5.9
+click                                    8.5.0
+colorama                                 0.4.6
+coverage                                 7.15.4
+cryptography                             50.0.1
+datasets                                 5.0.1
+dill                                     0.4.1
+diskcache                                5.6.3
+distro                                   1.9.0
+docstring_parser                         0.16
+durationpy                               0.11
+filelock                                 3.32.4
+filetype                                 1.2.0
+flatbuffers                              25.12.19
+frozenlist                               1.8.0
+fsspec                                   2026.6.0
+google-ai-generativelanguage             0.6.15
+google-api-core                          2.33.0
+google-api-python-client                 2.199.0
+google-auth                              2.57.0
+google-auth-httplib2                     0.4.2
+google-genai                             2.20.0
+google-generativeai                      0.8.6
+googleapis-common-protos                 1.75.0
+greenlet                                 3.5.5
+grpcio                                   1.83.1
+grpcio-status                            1.71.2
+h11                                      0.16.0
+hf-xet                                   1.6.0
+httpcore                                 1.0.9
+httplib2                                 0.32.0
+httptools                                0.8.0
+httpx                                    0.28.1
+httpx-sse                                0.4.3
+huggingface_hub                          1.29.0
+idna                                     3.19
+importlib_resources                      7.1.0
+iniconfig                                2.3.0
+instructor                               1.3.2
+itsdangerous                             2.2.0
+Jinja2                                   3.1.6
+jiter                                    0.16.0
+joblib                                   1.5.3
+jsonpatch                                1.33
+jsonpointer                              3.1.1
+jsonschema                               4.26.0
+jsonschema-specifications                2025.9.1
+kubernetes                               36.0.3
+langchain                                1.3.18
+langchain-chroma                         1.1.0
+langchain-classic                        1.0.8
+langchain-community                      0.4.2
+langchain-core                           1.6.1
+langchain-google-genai                   4.3.7
+langchain-openai                         1.1.9
+langchain-protocol                       0.0.19
+langchain-text-splitters                 1.1.2
+langgraph                                1.2.11
+langgraph-checkpoint                     4.2.0
+langgraph-prebuilt                       1.1.0
+langgraph-sdk                            0.4.4
+langsmith                                0.11.2
+markdown-it-py                           4.2.0
+MarkupSafe                               3.0.3
+mdurl                                    0.1.2
+mmh3                                     5.3.0
+mpmath                                   1.3.0
+multidict                                6.7.1
+multiprocess                             0.70.19
+narwhals                                 2.25.0
+nest-asyncio                             1.6.0
+networkx                                 3.6.1
+numpy                                    2.5.2
+oauthlib                                 3.3.1
+onnxruntime                              1.29.0
+openai                                   1.109.1
+opentelemetry-api                        1.44.0
+opentelemetry-exporter-otlp-proto-common 1.44.0
+opentelemetry-exporter-otlp-proto-grpc   1.44.0
+opentelemetry-proto                      1.44.0
+opentelemetry-sdk                        1.44.0
+opentelemetry-semantic-conventions       0.65b0
+orjson                                   3.12.0
+ormsgpack                                1.12.2
+overrides                                7.7.0
+packaging                                26.3
+pandas                                   3.0.5
+pillow                                   12.3.0
+pip                                      26.2.1
+pluggy                                   1.6.0
+propcache                                0.5.2
+proto-plus                               1.28.2
+protobuf                                 5.29.6
+pyarrow                                  25.0.1
+pyasn1                                   0.6.4
+pyasn1_modules                           0.4.2
+pybase64                                 1.5.0
+pycparser                                3.0
+pydantic                                 2.13.4
+pydantic_core                            2.46.4
+pydantic-settings                        2.15.0
+pydeck                                   0.9.3
+Pygments                                 2.21.0
+pyparsing                                3.3.2
+PyPika                                   0.51.1
+pyproject_hooks                          1.2.0
+pytest                                   9.1.1
+pytest-cov                               7.1.0
+python-dateutil                          2.9.0.post0
+python-dotenv                            1.2.3
+python-multipart                         0.0.32
+PyYAML                                   6.0.3
+ragas                                    0.4.3
+rank-bm25                                0.2.2
+referencing                              0.37.0
+regex                                    2026.7.19
+requests                                 2.34.2
+requests-oauthlib                        2.0.0
+requests-toolbelt                        1.0.0
+rich                                     13.9.4
+rpds-py                                  2026.6.3
+safetensors                              0.8.0
+scikit-learn                             1.9.0
+scikit-network                           0.33.5
+scipy                                    1.18.1
+sentence-transformers                    6.0.0
+setuptools                               84.0.0
+shellingham                              1.5.4
+six                                      1.17.0
+sniffio                                  1.3.1
+SQLAlchemy                               2.0.52
+starlette                                1.6.0
+streamlit                                1.62.0
+sympy                                    1.13.1
+tenacity                                 8.5.0
+threadpoolctl                            3.6.0
+tiktoken                                 0.14.0
+tokenizers                               0.23.1
+toml                                     0.10.2
+torch                                    2.6.0
+tqdm                                     4.70.0
+transformers                             5.16.1
+typer                                    0.27.2
+typing_extensions                        4.16.0
+typing-inspection                        0.4.4
+tzdata                                   2026.3
+uritemplate                              4.2.0
+urllib3                                  2.7.0
+uuid_utils                               0.17.0
+uvicorn                                  0.52.4
+watchdog                                 6.0.0
+watchfiles                               1.2.0
+websocket-client                         1.9.0
+websockets                               16.1.1
+wheel                                    0.48.0
+xxhash                                   4.0.1
+yarl                                     1.24.5
+zstandard                                0.25.0
+(.venv) PS C:\Users\KRISHITH\Downloads\Product_Catalog_Rag> 
+

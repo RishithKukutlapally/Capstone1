@@ -1,0 +1,8 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(./.venv/Scripts/python.exe -c ' *)",
+      "Bash(grep -vi \"warn\\\\|deprecat\\\\|google.generativeai\\\\|README\\\\|import google\\\\|updates or bug\\\\|^$\")"
+    ]
+  }
+}

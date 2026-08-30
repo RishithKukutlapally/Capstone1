@@ -1,0 +1,309 @@
+{
+  "name": "Product Catalog & Compliance Assistant - Golden Evaluation Set",
+  "business_case_id": "AAIE_021_ECM",
+  "version": "1.0",
+  "description": "Committed golden set for AC-08. Each entry carries a reference answer, the clause ids that should be retrieved, and the acceptance criteria it exercises. Question types deliberately cover exact-term lookup (exercises the BM25 arm), paraphrase (exercises the vector arm), multi-part (exercises decomposition), cross-document reasoning, and out-of-corpus abstention.",
+  "question_count": 20,
+  "abstention_count": 3,
+  "questions": [
+    {
+      "id": "G01",
+      "question": "What warning text is required for a product that contains a button or coin cell battery?",
+      "reference_answer": "The product, its packaging and the listing must carry the ingestion hazard warning: \"WARNING: INGESTION HAZARD - This product contains a button or coin cell battery. Swallowing can lead to chemical burns, perforation of soft tissue, and death. Seek immediate medical attention.\" The warning must also say to keep batteries out of reach of children and to dispose of used batteries immediately.",
+      "expected_clauses": [
+        "SAF-003-C7"
+      ],
+      "acceptance_criteria": [
+        "AC-02",
+        "AC-06"
+      ],
+      "category": "safety_labeling",
+      "question_type": "single_clause_lookup"
+    },
+    {
+      "id": "G03",
+      "question": "What is the maximum concentration of lead allowed in an accessible material of a children's product?",
+      "reference_answer": "Lead must not exceed 0.009 percent by weight in any accessible material of a product intended for children. Concentration limits are expressed as a weight percentage of the homogeneous material, not of the finished article.",
+      "expected_clauses": [
+        "RSR-001-C4"
+      ],
+      "acceptance_criteria": [
+        "AC-02",
+        "AC-03"
+      ],
+      "category": "restricted_substances",
+      "question_type": "single_clause_lookup",
+      "supporting_clauses": [
+        "RSR-001-C3"
+      ],
+      "key_note": "RSR-001-C4 states the limit; RSR-001-C3 is measurement basis, not required."
+    },
+    {
+      "id": "G07",
+      "question": "What is the concentration limit for the sum of DEHP, DBP and BBP in plasticised material?",
+      "reference_answer": "The sum of the restricted phthalates DEHP, DBP and BBP must not exceed 0.1 percent by weight in any plasticised material. In toys and childcare articles that can be placed in the mouth, DINP, DIDP and DNOP are restricted to the same limit.",
+      "expected_clauses": [
+        "RSR-001-C5"
+      ],
+      "acceptance_criteria": [
+        "AC-02",
+        "AC-03"
+      ],
+      "category": "restricted_substances",
+      "question_type": "exact_term_lookup"
+    },
+    {
+      "id": "G08",
+      "question": "What is the chromium VI limit in leather that touches the skin?",
+      "reference_answer": "Chromium VI must not exceed 3 milligrams per kilogram in leather articles in contact with the skin. The limit applies to footwear linings, straps and leather garments.",
+      "expected_clauses": [
+        "RSR-003-C5"
+      ],
+      "acceptance_criteria": [
+        "AC-02",
+        "AC-03"
+      ],
+      "category": "restricted_substances",
+      "question_type": "exact_term_lookup"
+    },
+    {
+      "id": "G09",
+      "question": "What is the magnetic flux index threshold above which a loose magnet is prohibited in a toy?",
+      "reference_answer": "A loose or detachable magnet, or a magnetic component that is a small part, must not have a magnetic flux index of 50 kG2mm2 or greater. Products exceeding this threshold are prohibited in toys and in novelty products marketed to any age group.",
+      "expected_clauses": [
+        "SAF-002-C6"
+      ],
+      "acceptance_criteria": [
+        "AC-02",
+        "AC-03"
+      ],
+      "category": "safety_labeling",
+      "question_type": "exact_term_lookup"
+    },
+    {
+      "id": "G10",
+      "question": "What are the dimensions of the small parts cylinder?",
+      "reference_answer": "A small part is any component, including one that detaches under the standard use and abuse tests, that fits entirely within a cylinder of 31.7 millimetres diameter and 57.1 millimetres depth measured at the shallowest point.",
+      "expected_clauses": [
+        "SAF-002-C1"
+      ],
+      "acceptance_criteria": [
+        "AC-02",
+        "AC-03"
+      ],
+      "category": "safety_labeling",
+      "question_type": "exact_term_lookup"
+    },
+    {
+      "id": "G11",
+      "question": "Can I put 'free shipping' and 'best seller' in my product name?",
+      "reference_answer": "No. Titles must not contain promotional claims, price references, shipping terms or urgency language. \"free shipping\" and \"best seller\" are both given as prohibited examples. Promotional language in a title is a Tier 1 defect and suppresses the listing from search.",
+      "expected_clauses": [
+        "CLS-001-C6"
+      ],
+      "acceptance_criteria": [
+        "AC-02",
+        "AC-03"
+      ],
+      "category": "listing_standards",
+      "question_type": "paraphrased"
+    },
+    {
+      "id": "G12",
+      "question": "Is it okay for a face cream listing to say the product cures acne?",
+      "reference_answer": "No. A cosmetic may claim to cleanse, perfume, change appearance, protect or keep in good condition, but claims to treat, heal or prevent a medical condition reclassify the product as a medicine and are prohibited in the cosmetics category. \"cures acne\" is listed explicitly as a prohibited claim.",
+      "expected_clauses": [
+        "CAT-005-C8"
+      ],
+      "acceptance_criteria": [
+        "AC-02",
+        "AC-03"
+      ],
+      "category": "category_guideline",
+      "question_type": "paraphrased",
+      "supporting_clauses": [
+        "CAT-005-C7"
+      ],
+      "key_note": "CAT-005-C8 answers this alone; CAT-005-C7 is supporting principle, not required."
+    },
+    {
+      "id": "G13",
+      "question": "A seller wants to sell a toy with tiny pieces to two year olds. Is that allowed?",
+      "reference_answer": "No. A toy intended for children under 36 months must not contain, and must not be capable of generating, a small part, and may not be listed for that age group. This is an absolute prohibition rather than a labelling obligation, so a warning does not make it permissible.",
+      "expected_clauses": [
+        "SAF-002-C2"
+      ],
+      "acceptance_criteria": [
+        "AC-02",
+        "AC-03",
+        "AC-04"
+      ],
+      "category": "safety_labeling",
+      "question_type": "paraphrased"
+    },
+    {
+      "id": "G14",
+      "question": "What do I need to show buyers about what is inside a shampoo?",
+      "reference_answer": "Every cosmetic listing must publish the complete ingredient list using the international nomenclature, in descending order of weight, with ingredients below one percent permitted in any order after that threshold. An incomplete or paraphrased list is a Tier 1 labelling defect. A legible unretouched image of the physical ingredient panel is also required.",
+      "expected_clauses": [
+        "CAT-005-C3",
+        "IMG-004-C3"
+      ],
+      "acceptance_criteria": [
+        "AC-02",
+        "AC-04"
+      ],
+      "category": "category_guideline",
+      "question_type": "paraphrased"
+    },
+    {
+      "id": "G15",
+      "question": "For a children's toy that contains both magnets and a coin cell battery, what warnings do I need on the listing, and what is the lead limit for the materials?",
+      "reference_answer": "Three requirements apply. For magnets, where they are permitted at all, the listing must warn that swallowing more than one magnet may cause serious or fatal internal injury and that immediate medical attention is required; a loose magnet at or above 50 kG2mm2 flux index is prohibited outright. For the coin cell, the ingestion hazard warning is required on the product, packaging and listing, and the compartment must be tool-secured or need two simultaneous movements to open. For materials, lead must not exceed 0.009 percent by weight in any accessible material of a children's product.",
+      "expected_clauses": [
+        "SAF-002-C6|CAT-003-C6",
+        "SAF-002-C7|CAT-003-C6",
+        "SAF-003-C7|CAT-003-C7",
+        "SAF-003-C6|CAT-003-C7",
+        "RSR-001-C4"
+      ],
+      "acceptance_criteria": [
+        "AC-03",
+        "AC-04",
+        "AC-07"
+      ],
+      "category": "multi_part",
+      "question_type": "multi_part",
+      "key_note": "Magnet and button-cell rules appear both in the SAF safety documents and restated in the CAT-003 toys guideline, which cross-references them by id. Either citation is correct, so alternatives are accepted."
+    },
+    {
+      "id": "G16",
+      "question": "I'm listing a mains-powered LED lamp imported from another country. What approval do I need and what must I tell buyers about the plug?",
+      "reference_answer": "Any product with a mains connection requires the electrical goods category approval, and the approval application must include the plug and adapter specification for each storefront the product will be sold into. Where the supplied plug does not match the destination storefront's socket standard, the listing must state this prominently in the first bullet feature and state whether an adapter is included; omitting it is a Tier 1 safety-labelling defect.",
+      "expected_clauses": [
+        "CAT-001-C5",
+        "CAT-001-C6"
+      ],
+      "acceptance_criteria": [
+        "AC-03",
+        "AC-07"
+      ],
+      "category": "multi_part",
+      "question_type": "multi_part"
+    },
+    {
+      "id": "G17",
+      "question": "What allergen information must a packaged food listing show, and what image is required to go with it?",
+      "reference_answer": "The allergen declaration is mandatory and must name every regulated allergen present, including allergens present through cross-contamination where the manufacturer declares a precautionary statement. Omitting a present allergen is a Tier 1 safety defect causing immediate suppression. A legible image of the physical ingredient and nutrition panel is a mandatory secondary image, and listings without it are suppressed.",
+      "expected_clauses": [
+        "CAT-004-C4",
+        "CAT-004-C5",
+        "IMG-004-C3"
+      ],
+      "acceptance_criteria": [
+        "AC-03",
+        "AC-04",
+        "AC-07"
+      ],
+      "category": "multi_part",
+      "question_type": "multi_part"
+    },
+    {
+      "id": "G18",
+      "question": "For children's pyjamas, what flammability rule applies and how does it have to appear on the listing?",
+      "reference_answer": "Children's nightwear must either meet the low-flammability performance requirement of the applicable standard or, where it does not, carry the permanent warning label \"KEEP AWAY FROM FIRE\". Pyjamas that fail the performance requirement must carry the warning, while nightdresses and dressing gowns that fail it may not be supplied for children at all. Where a garment carries the warning, the listing must reproduce it in the first three bullet features and show the warning label in a secondary image.",
+      "expected_clauses": [
+        "SAF-005-C2",
+        "SAF-005-C4"
+      ],
+      "acceptance_criteria": [
+        "AC-03",
+        "AC-07"
+      ],
+      "category": "multi_part",
+      "question_type": "multi_part"
+    },
+    {
+      "id": "G19",
+      "question": "Does holding a category approval mean I no longer have to worry about restricted substance limits?",
+      "reference_answer": "No. A restricted-substance limit applies independently of any category approval, and holding a category approval never waives a limit in the restricted substances series. Where the prohibited and restricted listing policy conflicts with a category guideline, the more restrictive provision applies.",
+      "expected_clauses": [
+        "RSR-001-C2",
+        "CLS-006-C8"
+      ],
+      "acceptance_criteria": [
+        "AC-03",
+        "AC-04"
+      ],
+      "category": "cross_document",
+      "question_type": "cross_document"
+    },
+    {
+      "id": "G20",
+      "question": "What is the difference between a Tier 1 and a Tier 2 listing defect?",
+      "reference_answer": "A Tier 1 defect misleads the buyer, evades platform controls, or creates a safety or legal exposure, and results in immediate listing suppression at detection with no correction window. A Tier 2 defect degrades catalog quality without misleading the buyer and carries a 14 calendar day correction window before suppression.",
+      "expected_clauses": [
+        "CLS-005-C1",
+        "CLS-005-C2"
+      ],
+      "acceptance_criteria": [
+        "AC-02",
+        "AC-04"
+      ],
+      "category": "listing_standards",
+      "question_type": "cross_document"
+    },
+    {
+      "id": "G21",
+      "question": "Can I use an AI-generated image as the main photo for my product?",
+      "reference_answer": "No. Images produced by a generative model may only be used as secondary lifestyle images, must be labelled as illustrative in an on-image caption, and must never be used as the primary image or as a compliance label image. The primary image must be a photograph or a photorealistic render of the actual product supplied.",
+      "expected_clauses": [
+        "IMG-003-C6",
+        "IMG-001-C6"
+      ],
+      "acceptance_criteria": [
+        "AC-02",
+        "AC-03"
+      ],
+      "category": "image_content",
+      "question_type": "cross_document"
+    },
+    {
+      "id": "G22",
+      "question": "What is the capital of France?",
+      "reference_answer": "The corpus does not contain a guideline that supports an answer to this question. The assistant abstains.",
+      "expected_clauses": [],
+      "acceptance_criteria": [
+        "AC-05"
+      ],
+      "category": "out_of_scope",
+      "question_type": "abstention",
+      "expect_abstention": true
+    },
+    {
+      "id": "G23",
+      "question": "What is the marketplace's refund window for a buyer who received a damaged item?",
+      "reference_answer": "The corpus does not contain a guideline that supports an answer to this question. The corpus covers listing standards, category guidelines, safety and labeling, restricted substances and image guidelines, but contains no buyer refund or returns policy. The assistant abstains.",
+      "expected_clauses": [],
+      "acceptance_criteria": [
+        "AC-05"
+      ],
+      "category": "out_of_scope",
+      "question_type": "abstention",
+      "expect_abstention": true
+    },
+    {
+      "id": "G24",
+      "question": "What commission rate does the marketplace charge sellers in the electronics category?",
+      "reference_answer": "The corpus does not contain a guideline that supports an answer to this question. Seller commission and fee structures are not covered by any of the committed policy documents. The assistant abstains.",
+      "expected_clauses": [],
+      "acceptance_criteria": [
+        "AC-05"
+      ],
+      "category": "out_of_scope",
+      "question_type": "abstention",
+      "expect_abstention": true
+    }
+  ],
+  "scoring_note": "expected_clauses entries may contain alternatives separated by \"|\", meaning any one of them satisfies that requirement. This is used where the corpus states the same rule in more than one document and cross-references it by id. supporting_clauses are related context and are NOT scored. Both fields were revised after inspecting retrieval output; each revision is recorded in the entry key_note and in docs/failure-taxonomy.md."
+}

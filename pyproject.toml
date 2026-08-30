@@ -1,0 +1,26 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "catalog-rag"
+version = "1.0.0"
+description = "Product Catalog & Compliance Assistant — a retrieval-augmented assistant over synthetic catalog and product-compliance policy."
+requires-python = ">=3.11"
+readme = "README.md"
+
+[project.scripts]
+catalog-rag = "catalog_rag.cli:app"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["src"]
+addopts = "-q"
+markers = [
+    "acceptance: test that verifies a numbered acceptance criterion (AC-NN)",
+    "requires_llm: test that needs a live GOOGLE_API_KEY and is skipped without one",
+    "slow: test that rebuilds the index or otherwise takes a while",
+]
