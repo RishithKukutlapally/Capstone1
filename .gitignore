@@ -19,9 +19,9 @@ htmlcov/
 .ruff_cache/
 
 # --- Generated vector index --------------------------------------------------
-# The Chroma index is a build artifact: it is rebuilt from the committed corpus
-# by `python -m catalog_rag.cli ingest`, so it is not committed.
-storage/
+# storage/ is normally a build artifact rebuilt by `catalog-rag ingest`.
+# It is committed here so the project can be cloned and run without an
+# ingest step. Delete storage/ and re-run ingest if it ever fails to load.
 
 # --- Runtime logs ------------------------------------------------------------
 # Logs may contain user queries; per docs/pii-policy.md they stay local.
