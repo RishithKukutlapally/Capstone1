@@ -42,3 +42,6 @@ Thumbs.db
 
 # NOTE: reports/ is deliberately NOT ignored. Per the Evidence-in-Repo Rule the
 # RAGAS report, model comparison and sample answers MUST be committed.
+
+# Claude Code local settings
+.claude/
